@@ -3,9 +3,11 @@ import { Component } from "react";
 import Carousel from "./Carousel";
 import ErrorBoundary from "./ErrorBoundary";
 import ThemeContext from "./ThemeContext";
+import Modal from "./Modal";
 
 class Details extends Component {
-  state = { loading: true };
+  // Add one more state for Modal
+  state = { loading: true, showModal: false };
 
   async componentDidMount() {
     const res = await fetch(
@@ -23,6 +25,10 @@ class Details extends Component {
       )
     );
   }
+
+  toggleModal = () => this.setState({ showModal: !this.state.showModal });
+  // Send user to real pet adoptting page :)
+  adopt = () => (window.location = "http://bit.ly/pet-adopt");
 
   render() {
     if (this.state.loading) {
@@ -43,13 +49,27 @@ class Details extends Component {
 
           <ThemeContext.Consumer>
             {([themeHook]) => (
-              <button style={{ backgroundColor: themeHook }}>
+              <button
+                style={{ backgroundColor: themeHook }}
+                onClick={this.toggleModal}
+              >
                 Adopt {name}
               </button>
             )}
           </ThemeContext.Consumer>
 
           <p>{description}</p>
+          {this.state.showModal ? (
+            <Modal>
+              <div>
+                <h1>Would you like to adopt {name}</h1>
+                <div className="buttons">
+                  <button onClick={this.adopt}>Yes</button>
+                  <button onClick={this.toggleModal}>No, I'm a monster!</button>
+                </div>
+              </div>
+            </Modal>
+          ) : null}
         </div>
       </div>
     );
